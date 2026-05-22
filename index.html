@@ -66,6 +66,13 @@ body.light nav{background:rgba(240,244,255,0.92)}
 .theme-btn:hover{background:var(--glass2);transform:scale(1.05)}
 .nav-cta{padding:9px 22px;background:linear-gradient(135deg,var(--blue),var(--blue2));color:#fff;border:none;border-radius:10px;font-size:13px;font-weight:700;letter-spacing:.3px;transition:all .25s;font-family:'Syne',sans-serif}
 .nav-cta:hover{transform:translateY(-2px);box-shadow:0 6px 24px rgba(26,110,245,.45)}
+.nav-login-btn{padding:9px 18px;background:transparent;color:var(--white3);border:1px solid var(--border);border-radius:10px;font-size:13px;font-weight:600;letter-spacing:.3px;transition:all .25s;font-family:'Syne',sans-serif;display:inline-flex;align-items:center}
+.nav-login-btn:hover{color:var(--white);border-color:var(--border2);background:var(--glass2)}
+.hero-auth-row{display:flex;align-items:center;gap:20px;justify-content:center;margin-top:28px;flex-wrap:wrap}
+.hero-signup-btn{padding:13px 32px;background:linear-gradient(135deg,var(--blue),var(--cyan));color:#fff;border-radius:13px;font-size:15px;font-weight:700;letter-spacing:.4px;font-family:'Syne',sans-serif;transition:all .25s;display:inline-flex;align-items:center;gap:8px}
+.hero-signup-btn:hover{transform:translateY(-3px);box-shadow:0 14px 40px rgba(26,110,245,.5)}
+.hero-login-link{font-size:14px;color:var(--white3);font-weight:500;transition:color .2s}
+.hero-login-link:hover{color:var(--blue3)}
 .ham{display:none;flex-direction:column;gap:5px;background:transparent;border:none;padding:8px;cursor:pointer}
 .ham span{display:block;width:22px;height:2px;background:var(--white);border-radius:2px;transition:all .3s}
 .mobile-menu{display:none;position:fixed;top:68px;left:0;right:0;background:rgba(5,13,31,.97);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:16px;z-index:199;flex-direction:column;gap:4px}
@@ -334,7 +341,8 @@ footer{background:var(--navy2);border-top:1px solid var(--border);padding:64px 6
   </div>
   <div class="nav-right">
     <button class="theme-btn" id="themeBtn" onclick="toggleTheme()" title="Toggle theme">🌙</button>
-    <button class="nav-cta" onclick="showPage('track',document.querySelectorAll('.nav-link')[1])">Track Now →</button>
+    <a href="login.html" class="nav-login-btn">Log In</a>
+    <a href="signup.html" class="nav-cta">Sign Up Free →</a>
     <button class="ham" id="hamBtn" onclick="toggleMobile()" aria-label="Menu">
       <span></span><span></span><span></span>
     </button>
@@ -346,6 +354,9 @@ footer{background:var(--navy2);border-top:1px solid var(--border);padding:64px 6
   <button class="mobile-link active" onclick="showPage('home',this);closeMobile()">🏠  Home</button>
   <button class="mobile-link" onclick="showPage('track',this);closeMobile()">📦  Track Shipment</button>
   <button class="mobile-link" onclick="showPage('contact',this);closeMobile()">✉️  Contact Us</button>
+  <div style="height:1px;background:var(--border);margin:6px 0"></div>
+  <a href="login.html" class="mobile-link" style="color:var(--blue3);font-weight:600">🔑  Log In</a>
+  <a href="signup.html" class="mobile-link" style="color:var(--cyan);font-weight:700">🚀  Sign Up Free</a>
 </div>
 
 <!-- ============================================================ HOME PAGE ============================================================ -->
@@ -379,6 +390,10 @@ footer{background:var(--navy2);border-top:1px solid var(--border);padding:64px 6
         <span class="sample-chip" onclick="fillHero('SWR-2025-001')">SWR-2025-001</span>
         <span class="sample-chip" onclick="fillHero('SWR-2025-003')">SWR-2025-003</span>
         <span class="sample-chip" onclick="fillHero('SWR-2025-007')">SWR-2025-007</span>
+      </div>
+      <div class="hero-auth-row">
+        <a href="signup.html" class="hero-signup-btn">🚀 Get Started Free</a>
+        <a href="login.html" class="hero-login-link">Already have an account? Log in →</a>
       </div>
     </div>
   </section>

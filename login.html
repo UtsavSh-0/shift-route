@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SwiftRoute — Login</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --navy:#050d1f;--navy2:#0a1628;--blue:#1a6ef5;--blue2:#2d85ff;--blue3:#5aa3ff;
+  --cyan:#00d4ff;--white:#fff;--white3:#8fa3be;
+  --glass:rgba(255,255,255,0.04);--glass2:rgba(255,255,255,0.07);--glass3:rgba(255,255,255,0.13);
+  --border:rgba(255,255,255,0.08);--border2:rgba(26,110,245,0.45);
+  --success:#00e676;--error:#ff4d6d;
+}
+html,body{min-height:100%;font-family:'DM Sans',sans-serif;background:var(--navy);color:var(--white)}
+body{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px 16px;position:relative;overflow-x:hidden}
+h1,h2,h3{font-family:'Syne',sans-serif}
+a{text-decoration:none;color:inherit}
+button{cursor:pointer;font-family:'DM Sans',sans-serif}
+input{font-family:'DM Sans',sans-serif}
+
+/* BG */
+.bg{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+.bg-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(26,110,245,.055) 1px,transparent 1px),linear-gradient(90deg,rgba(26,110,245,.055) 1px,transparent 1px);background-size:56px 56px;animation:gridMove 28s linear infinite}
+@keyframes gridMove{to{background-position:56px 56px}}
+.bg-glow{position:absolute;width:700px;height:700px;border-radius:50%;background:radial-gradient(circle,rgba(26,110,245,.18) 0%,transparent 65%);top:50%;left:50%;transform:translate(-50%,-50%);animation:pulse 5s ease-in-out infinite}
+@keyframes pulse{0%,100%{transform:translate(-50%,-50%) scale(1)}50%{transform:translate(-50%,-50%) scale(1.1)}}
+.orb{position:absolute;border-radius:50%;pointer-events:none}
+.orb1{width:340px;height:340px;background:radial-gradient(circle,rgba(0,212,255,.08),transparent 70%);top:-100px;right:-80px;animation:floatY 8s ease-in-out infinite}
+.orb2{width:260px;height:260px;background:radial-gradient(circle,rgba(26,110,245,.1),transparent 70%);bottom:-70px;left:-60px;animation:floatY 7s ease-in-out infinite;animation-delay:3.5s}
+@keyframes floatY{0%,100%{transform:translateY(0)}50%{transform:translateY(-22px)}}
+
+/* WRAP */
+.wrap{position:relative;z-index:10;width:100%;max-width:440px;animation:cardIn .65s cubic-bezier(.22,1,.36,1) both}
+@keyframes cardIn{from{opacity:0;transform:translateY(28px)}to{opacity:1;transform:translateY(0)}}
+
+/* CARD */
+.card{background:rgba(8,18,36,0.82);border:1px solid var(--border);border-radius:24px;padding:40px 40px 36px;backdrop-filter:blur(32px);box-shadow:0 32px 80px rgba(0,0,0,.55),inset 0 1px 0 rgba(255,255,255,.06)}
+
+/* BRAND */
+.brand{display:flex;align-items:center;gap:10px;justify-content:center;margin-bottom:32px}
+.brand-logo{width:44px;height:44px;border-radius:14px;background:linear-gradient(135deg,var(--blue),var(--cyan));display:flex;align-items:center;justify-content:center;font-size:22px;box-shadow:0 6px 20px rgba(26,110,245,.4);flex-shrink:0}
+.brand-name{font-family:'Syne',sans-serif;font-weight:800;font-size:22px;letter-spacing:-.5px}
+
+/* STEPS */
+.step{display:none}
+.step.active{display:block;animation:stepIn .38s cubic-bezier(.22,1,.36,1) both}
+@keyframes stepIn{from{opacity:0;transform:translateX(16px)}to{opacity:1;transform:translateX(0)}}
+
+/* PROGRESS */
+.dots{display:flex;gap:7px;justify-content:center;margin-bottom:26px}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--glass3);transition:all .35s}
+.dot.on{width:22px;border-radius:4px;background:linear-gradient(90deg,var(--blue),var(--cyan))}
+
+/* HEADINGS */
+.ttl{font-size:25px;font-weight:800;letter-spacing:-.7px;margin-bottom:6px;text-align:center}
+.sub{font-size:13.5px;color:var(--white3);text-align:center;margin-bottom:28px;line-height:1.6;font-weight:300}
+
+/* FIELD */
+.field{margin-bottom:16px}
+.lbl{font-size:11.5px;font-weight:600;letter-spacing:.6px;color:var(--white3);text-transform:uppercase;margin-bottom:7px;display:block}
+.inp-wrap{display:flex;align-items:center;gap:10px;background:var(--glass2);border:1.5px solid var(--border);border-radius:12px;padding:13px 15px;transition:border-color .22s,box-shadow .22s}
+.inp-wrap:focus-within{border-color:var(--border2);box-shadow:0 0 0 3px rgba(26,110,245,.1)}
+.ico{font-size:16px;flex-shrink:0;opacity:.6}
+.inp{flex:1;background:transparent;border:none;outline:none;font-size:14.5px;color:var(--white);min-width:0}
+.inp::placeholder{color:var(--white3);font-size:14px}
+
+/* SEND OTP inside field */
+.send-btn{padding:7px 14px;background:transparent;border:1.5px solid var(--border2);border-radius:9px;font-size:12px;font-weight:700;color:var(--blue3);letter-spacing:.3px;font-family:'Syne',sans-serif;white-space:nowrap;flex-shrink:0;transition:all .2s}
+.send-btn:hover:not(:disabled){background:rgba(26,110,245,.13);transform:scale(1.03)}
+.send-btn:disabled{opacity:.4;cursor:default}
+
+/* OTP BOXES */
+.otp-row{display:flex;gap:8px;margin-top:8px}
+.otp-box{flex:1;text-align:center;background:var(--glass2);border:1.5px solid var(--border);border-radius:11px;padding:13px 4px;font-size:20px;font-weight:700;color:var(--white);outline:none;caret-color:var(--cyan);transition:border-color .22s,box-shadow .22s;font-family:'Syne',sans-serif}
+.otp-box:focus{border-color:var(--border2);box-shadow:0 0 0 3px rgba(26,110,245,.1)}
+.otp-box.filled{border-color:rgba(0,212,255,.38);color:var(--cyan)}
+
+/* PRIMARY BTN */
+.btn{width:100%;padding:14px;background:linear-gradient(135deg,var(--blue),var(--blue2));color:#fff;border:none;border-radius:13px;font-size:15px;font-weight:700;letter-spacing:.4px;font-family:'Syne',sans-serif;transition:all .25s;margin-top:8px;display:flex;align-items:center;justify-content:center;gap:8px}
+.btn:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 10px 32px rgba(26,110,245,.5)}
+.btn:active{transform:translateY(0)}
+.btn:disabled{opacity:.5;cursor:default;transform:none;box-shadow:none}
+
+/* SPINNER */
+.spin{width:17px;height:17px;border:2px solid rgba(255,255,255,.28);border-top-color:#fff;border-radius:50%;animation:spin .65s linear infinite;display:none;flex-shrink:0}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* STATUS */
+.msg{font-size:13px;text-align:center;margin-top:10px;min-height:18px;font-weight:500}
+.msg.err{color:var(--error)}
+.msg.ok{color:var(--success)}
+.msg.inf{color:var(--blue3)}
+
+/* RESEND */
+.resend{text-align:center;margin-top:12px;font-size:13px;color:var(--white3)}
+.resend span{color:var(--blue3);font-weight:600;cursor:pointer}
+.resend span.off{color:var(--white3);cursor:default;pointer-events:none}
+
+/* SUCCESS */
+.ok-wrap{text-align:center;padding:6px 0}
+.ok-icon{font-size:52px;margin-bottom:16px;display:block;animation:pop .5s cubic-bezier(.22,1,.36,1) both}
+@keyframes pop{from{transform:scale(0)}to{transform:scale(1)}}
+.ok-ttl{font-size:22px;font-weight:800;margin-bottom:8px}
+.ok-sub{font-size:13.5px;color:var(--white3);line-height:1.65;margin-bottom:24px}
+
+/* CHANGE LINK */
+.change{text-align:center;margin-top:13px;font-size:13px;color:var(--white3)}
+.change a{color:var(--blue3);font-weight:600;cursor:pointer}
+
+/* FOOTER */
+.footer{text-align:center;margin-top:22px;font-size:14px;color:var(--white3)}
+.footer a{color:var(--blue3);font-weight:600;transition:color .2s}
+.footer a:hover{color:var(--cyan)}
+
+/* BACK HOME */
+.back{display:block;text-align:center;margin-top:10px;font-size:13px;color:var(--white3);transition:color .2s}
+.back:hover{color:var(--blue3)}
+
+/* TOAST */
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(90px);z-index:9999;padding:12px 22px;border-radius:12px;font-size:13px;font-weight:600;display:flex;align-items:center;gap:9px;background:rgba(10,22,40,.95);backdrop-filter:blur(20px);border:1.5px solid var(--border);opacity:0;transition:all .32s cubic-bezier(.22,1,.36,1);white-space:nowrap;pointer-events:none}
+.toast.show{transform:translateX(-50%) translateY(0);opacity:1}
+.toast.s{border-color:rgba(0,230,118,.4);color:var(--success)}
+.toast.e{border-color:rgba(255,77,109,.4);color:var(--error)}
+.toast.i{border-color:var(--border2);color:var(--blue3)}
+
+/* SHAKE */
+@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-8px)}40%{transform:translateX(8px)}60%{transform:translateX(-5px)}80%{transform:translateX(4px)}}
+
+/* RESPONSIVE */
+@media(max-width:480px){
+  .card{padding:28px 22px 24px;border-radius:20px}
+  .ttl{font-size:22px}
+  body{padding:16px 12px}
+}
+</style>
+</head>
+<body>
+
+<div class="bg">
+  <div class="bg-grid"></div>
+  <div class="bg-glow"></div>
+  <div class="orb orb1"></div>
+  <div class="orb orb2"></div>
+</div>
+
+<div class="wrap">
+  <div class="card">
+
+    <div class="brand">
+      <div class="brand-logo">🚀</div>
+      <span class="brand-name">SwiftRoute</span>
+    </div>
+
+    <div class="dots">
+      <div class="dot on" id="d1"></div>
+      <div class="dot" id="d2"></div>
+      <div class="dot" id="d3"></div>
+    </div>
+
+    <!-- Step 1: Email -->
+    <div class="step active" id="s1">
+      <h2 class="ttl">Welcome back</h2>
+      <p class="sub">Enter your email and we'll send a one-time login code.</p>
+
+      <div class="field">
+        <label class="lbl" for="email">Email Address</label>
+        <div class="inp-wrap">
+          <span class="ico">✉️</span>
+          <input class="inp" id="email" type="email" placeholder="you@example.com" autocomplete="email">
+        </div>
+      </div>
+
+      <p class="msg" id="m1"></p>
+
+      <button class="btn" id="b1" onclick="sendOtp()">
+        <span id="b1t">Send OTP →</span>
+        <div class="spin" id="b1s"></div>
+      </button>
+    </div>
+
+    <!-- Step 2: OTP -->
+    <div class="step" id="s2">
+      <h2 class="ttl">Check your inbox</h2>
+      <p class="sub" id="otp-sub">We sent a 6-digit code to your email.</p>
+
+      <div class="field">
+        <label class="lbl">6-Digit Code</label>
+        <div class="otp-row" id="otp-wrap">
+          <input class="otp-box" maxlength="1" inputmode="numeric" type="text">
+          <input class="otp-box" maxlength="1" inputmode="numeric" type="text">
+          <input class="otp-box" maxlength="1" inputmode="numeric" type="text">
+          <input class="otp-box" maxlength="1" inputmode="numeric" type="text">
+          <input class="otp-box" maxlength="1" inputmode="numeric" type="text">
+          <input class="otp-box" maxlength="1" inputmode="numeric" type="text">
+        </div>
+      </div>
+
+      <p class="msg" id="m2"></p>
+
+      <div class="resend" id="resend-row" style="display:none">
+        <span id="resend-span">Resend in 30s</span>
+      </div>
+
+      <button class="btn" id="b2" onclick="verifyOtp()">
+        <span id="b2t">Verify &amp; Login</span>
+        <div class="spin" id="b2s"></div>
+      </button>
+
+      <p class="change">Wrong email? <a onclick="goStep(1)">Change</a></p>
+    </div>
+
+    <!-- Step 3: Success -->
+    <div class="step" id="s3">
+      <div class="ok-wrap">
+        <span class="ok-icon">🎉</span>
+        <h2 class="ok-ttl">You're in!</h2>
+        <p class="ok-sub">Successfully logged into SwiftRoute.<br>Redirecting you to the dashboard…</p>
+        <button class="btn" onclick="location.href='index.html'">Go to Dashboard →</button>
+        <a class="back" href="index.html">← Back to SwiftRoute</a>
+      </div>
+    </div>
+
+  </div>
+
+  <p class="footer" id="foot">Don't have an account? <a href="signup.html">Sign up free →</a></p>
+</div>
+
+<div id="toast" class="toast"></div>
+
+<script>
+// ── State ──────────────────────────────────────────────
+let _otp = '';
+
+// ── OTP Wire ──────────────────────────────────────────
+const boxes = document.querySelectorAll('.otp-box');
+boxes.forEach((b, i) => {
+  b.addEventListener('keydown', e => {
+    if (e.key === 'Backspace' && !b.value && i > 0) { boxes[i-1].focus(); boxes[i-1].classList.remove('filled'); }
+  });
+  b.addEventListener('input', e => {
+    const v = e.target.value.replace(/\D/g,'').slice(-1);
+    b.value = v;
+    b.classList.toggle('filled', !!v);
+    if (v && i < boxes.length - 1) boxes[i+1].focus();
+  });
+  b.addEventListener('paste', e => {
+    e.preventDefault();
+    const t = (e.clipboardData||window.clipboardData).getData('text').replace(/\D/g,'');
+    [...t].forEach((c,j) => { if(boxes[i+j]){boxes[i+j].value=c;boxes[i+j].classList.add('filled');} });
+    boxes[Math.min(i+t.length, boxes.length-1)].focus();
+  });
+});
+
+// ── Helpers ───────────────────────────────────────────
+function toast(msg, type='i') {
+  const t = document.getElementById('toast');
+  t.className = `toast ${type}`;
+  t.innerHTML = `<span>${{s:'✅',e:'❌',i:'💬'}[type]||'💬'}</span><span>${msg}</span>`;
+  t.classList.add('show');
+  clearTimeout(t._t);
+  t._t = setTimeout(() => t.classList.remove('show'), 3500);
+}
+function setMsg(id, txt, cls) {
+  const el = document.getElementById(id);
+  el.textContent = txt; el.className = `msg ${cls}`;
+}
+function setBusy(btn, txt, spin, on) {
+  document.getElementById(btn).disabled = on;
+  document.getElementById(txt).style.display = on ? 'none' : '';
+  document.getElementById(spin).style.display = on ? 'block' : 'none';
+}
+function validEmail(e) { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e); }
+function goStep(n) {
+  [1,2,3].forEach(i => document.getElementById('s'+i).classList.toggle('active', i===n));
+  [1,2,3].forEach(i => document.getElementById('d'+i).classList.toggle('on', i<=n));
+  document.getElementById('foot').style.display = n===3 ? 'none' : '';
+}
+function otpVal() { return [...boxes].map(b=>b.value).join(''); }
+function countdown(sec, spanId, onDone) {
+  let s = sec;
+  const sp = document.getElementById(spanId);
+  const tick = () => {
+    sp.className = 'off'; sp.textContent = `Resend in ${s}s`;
+    if (s-- <= 0) { sp.className = ''; sp.textContent = 'Resend OTP'; onDone && onDone(); return; }
+    setTimeout(tick, 1000);
+  };
+  tick();
+}
+
+// ── Step 1: Send OTP ──────────────────────────────────
+async function sendOtp() {
+  const email = document.getElementById('email').value.trim();
+  if (!validEmail(email)) { setMsg('m1','⚠️ Please enter a valid email address.','err'); return; }
+  setBusy('b1','b1t','b1s', true);
+  setMsg('m1','','');
+  await new Promise(r => setTimeout(r, 1100));
+  _otp = String(Math.floor(100000 + Math.random()*900000));
+  console.log('[DEV] OTP:', _otp); // remove in production
+  setBusy('b1','b1t','b1s', false);
+  document.getElementById('otp-sub').textContent = `We sent a 6-digit code to ${email}`;
+  toast(`Code sent to ${email}`, 's');
+  goStep(2);
+  setTimeout(() => boxes[0].focus(), 300);
+  document.getElementById('resend-row').style.display = 'block';
+  countdown(30, 'resend-span', () => {
+    document.getElementById('resend-span').onclick = async () => {
+      document.getElementById('resend-span').className = 'off';
+      await new Promise(r => setTimeout(r, 800));
+      _otp = String(Math.floor(100000 + Math.random()*900000));
+      console.log('[DEV] Resent OTP:', _otp);
+      toast('New code sent!', 'i');
+      countdown(30, 'resend-span', null);
+    };
+  });
+}
+
+// ── Step 2: Verify OTP ────────────────────────────────
+async function verifyOtp() {
+  const code = otpVal();
+  if (code.length < 6) { setMsg('m2','⚠️ Please enter all 6 digits.','err'); return; }
+  setBusy('b2','b2t','b2s', true);
+  setMsg('m2','','');
+  await new Promise(r => setTimeout(r, 950));
+  if (code === _otp) {
+    setBusy('b2','b2t','b2s', false);
+    toast('Login successful! 🎉','s');
+    goStep(3);
+  } else {
+    setBusy('b2','b2t','b2s', false);
+    setMsg('m2','❌ Incorrect code — please try again.','err');
+    const w = document.getElementById('otp-wrap');
+    w.style.animation = 'none'; w.offsetHeight; w.style.animation = 'shake .4s ease';
+    boxes.forEach(b => { b.value=''; b.classList.remove('filled'); });
+    boxes[0].focus();
+  }
+}
+
+// ── Enter keys ────────────────────────────────────────
+document.getElementById('email').addEventListener('keydown', e => { if(e.key==='Enter') sendOtp(); });
+</script>
+</body>
+</html>
