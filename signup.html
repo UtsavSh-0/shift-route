@@ -93,8 +93,8 @@ input{font-family:'DM Sans',sans-serif}
 .chk-lbl a{color:var(--blue3);font-weight:600}
 
 /* OTP BOXES */
-.otp-row{display:flex;gap:8px;margin-top:8px}
-.otp-box{flex:1;text-align:center;background:var(--glass2);border:1.5px solid var(--border);border-radius:11px;padding:13px 4px;font-size:20px;font-weight:700;color:var(--white);outline:none;caret-color:var(--cyan);transition:border-color .22s,box-shadow .22s;font-family:'Syne',sans-serif}
+.otp-row{display:flex;gap:7px;margin-top:8px}
+.otp-box{flex:1;text-align:center;background:var(--glass2);border:1.5px solid var(--border);border-radius:10px;padding:9px 2px;font-size:17px;font-weight:700;color:var(--white);outline:none;caret-color:var(--cyan);transition:border-color .22s,box-shadow .22s;font-family:'Syne',sans-serif;min-width:0;max-width:48px}
 .otp-box:focus{border-color:var(--border2);box-shadow:0 0 0 3px rgba(26,110,245,.1)}
 .otp-box.filled{border-color:rgba(0,212,255,.38);color:var(--cyan)}
 
@@ -152,6 +152,21 @@ input{font-family:'DM Sans',sans-serif}
   .row2{grid-template-columns:1fr}
   body{padding:16px 12px}
 }
+.pending-box{background:var(--glass2);border:1.5px solid var(--border);border-radius:14px;padding:16px 18px;margin:20px 0 16px;text-align:left;display:flex;flex-direction:column;gap:12px}
+.pending-row{display:flex;align-items:center;gap:10px;font-size:13px;font-weight:500;color:var(--white)}
+.pending-row.muted{opacity:.4}
+.pending-dot{width:8px;height:8px;border-radius:50%;background:var(--white3);flex-shrink:0}
+.pulse-dot{background:var(--warning);animation:dotPulse 1.5s ease-in-out infinite}
+@keyframes dotPulse{0%,100%{box-shadow:0 0 0 0 rgba(255,179,0,.5)}50%{box-shadow:0 0 0 5px rgba(255,179,0,0)}}
+.pending-row span:nth-child(2){flex:1}
+.badge-done{font-size:11px;font-weight:700;color:var(--success);background:rgba(0,230,118,.1);border:1px solid rgba(0,230,118,.25);border-radius:6px;padding:2px 8px;white-space:nowrap}
+.badge-pending{font-size:11px;font-weight:700;color:var(--warning);background:rgba(255,179,0,.1);border:1px solid rgba(255,179,0,.25);border-radius:6px;padding:2px 8px;white-space:nowrap;animation:badgeFade 1.5s ease-in-out infinite}
+@keyframes badgeFade{0%,100%{opacity:1}50%{opacity:.5}}
+.badge-lock{font-size:13px}
+.pending-note{font-size:12.5px;color:var(--white3);line-height:1.65;margin-bottom:20px;text-align:center}
+.pending-note strong{color:var(--blue3)}
+
+
 </style>
 </head>
 <body>
@@ -302,13 +317,33 @@ input{font-family:'DM Sans',sans-serif}
       </button>
     </div>
 
-    <!-- ── Step 4: Success ── -->
+    <!-- ── Step 4: Pending Approval ── -->
     <div class="step" id="s4">
       <div class="ok-wrap">
-        <span class="ok-icon">🎉</span>
-        <h2 class="ok-ttl">You're all set!</h2>
-        <p class="ok-sub" id="ok-sub">Welcome to SwiftRoute!<br>Your account is ready to use.</p>
-        <button class="btn" onclick="location.href='login.html'">Login Now →</button>
+        <span class="ok-icon">⏳</span>
+        <h2 class="ok-ttl">Request Submitted!</h2>
+        <p class="ok-sub" id="ok-sub">Your account request has been sent to the admin for review.</p>
+
+        <div class="pending-box">
+          <div class="pending-row">
+            <span class="pending-dot"></span>
+            <span>Account details saved</span>
+            <span class="badge-done">✓ Done</span>
+          </div>
+          <div class="pending-row">
+            <span class="pending-dot pulse-dot"></span>
+            <span>Waiting for admin approval</span>
+            <span class="badge-pending">Pending</span>
+          </div>
+          <div class="pending-row muted">
+            <span class="pending-dot"></span>
+            <span>Account activated</span>
+            <span class="badge-lock">🔒</span>
+          </div>
+        </div>
+
+        <p class="pending-note">You'll receive a confirmation email at <strong id="pending-email"></strong> once your account is approved. This usually takes 24–48 hours.</p>
+
         <a class="back" href="index.html">← Back to SwiftRoute</a>
       </div>
     </div>
@@ -440,11 +475,13 @@ async function step3(){
   if(pw!==pw2){ setMsg('m3','⚠️ Passwords do not match.','err'); return; }
   if(!ok){ setMsg('m3','⚠️ Please agree to the Terms of Service.','err'); return; }
   busy(3,true); setMsg('m3','','');
-  await new Promise(r=>setTimeout(r,1300));
+  await new Promise(r=>setTimeout(r,1400));
   busy(3,false);
   const name=document.getElementById('fn').value.trim();
-  document.getElementById('ok-sub').innerHTML=`Welcome, <strong>${name}</strong>! 🎉<br>Your account is ready — start tracking now.`;
-  toast('Account created! Welcome aboard 🎉','s');
+  const email=document.getElementById('em').value.trim();
+  document.getElementById('ok-sub').innerHTML=`Hi <strong>${name}</strong>, your request has been received!`;
+  document.getElementById('pending-email').textContent=email;
+  toast('Request submitted — awaiting admin approval 🕐','i');
   goStep(4);
 }
 
